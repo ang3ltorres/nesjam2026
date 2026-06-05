@@ -3,6 +3,7 @@
 
 #include "time_cycle.h"
 #include "render.h"
+#include "player.h"
 #include "global.h"
 
 int main(void)
@@ -10,15 +11,12 @@ int main(void)
   const int screenWidth  = 1280;
   const int screenHeight = 720;
 
-  const int renderWidth  = 256;
-  const int renderHeight = 240;
-
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(screenWidth, screenHeight, "JTM - Joy Till Midnight");
-  SetWindowMinSize(renderWidth, renderHeight);
+  SetWindowMinSize(GAME_WIDTH, GAME_HEIGHT);
   SetTargetFPS(60);
 
-  renderInit();
+  init();
   
   updateScale();
 
@@ -28,6 +26,7 @@ int main(void)
     // Update //
     ////////////
     timeCycleUpdate();
+    playerUpdate();
 
     // Window scale
     if (IsWindowResized())
@@ -46,9 +45,12 @@ int main(void)
     DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
 
     // draw time raw
-    DrawText(TextFormat("RAW Time: %f", timeCycle.time), 0, 32, 10, RAYWHITE);
+    // DrawText(TextFormat("RAW Time: %f", timeCycle.time), 0, 32, 10, RAYWHITE);
+
+    // DrawTexture(texture, 0, 0, WHITE);
 
     timeCycleDraw();
+    playerDraw();
 
     EndTextureMode();
 
@@ -57,11 +59,12 @@ int main(void)
 
     ClearBackground(RAYWHITE);
     // DrawTexture(render.texture, 0, 0, WHITE);
-    DrawTexturePro(render.texture.texture, (Rectangle){ 0, 0, 256, -240 }, (Rectangle){ 0, 0, 256 * render.scale, 240 * render.scale }, (Vector2){ 0, 0 }, 0, WHITE);
+    DrawTexturePro(render.texture.texture, (Rectangle){ 0, 0, GAME_WIDTH, -GAME_HEIGHT }, (Rectangle){ 0, 0, GAME_WIDTH * render.scale, GAME_HEIGHT * render.scale }, (Vector2){ 0, 0 }, 0, WHITE);
 
     EndDrawing();
   }
 
+  end();
   CloseWindow();
 
   return 0;

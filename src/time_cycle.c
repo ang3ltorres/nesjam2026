@@ -1,17 +1,14 @@
 #include "time_cycle.h"
 #include <raylib.h>
 #include <raymath.h>
-#include <math.h>
-#include <stdio.h>
-
-#include "render.h"
+#include "global.h"
 
 TimeCycle timeCycle = {
 
   .time           = 0.0f,
   .timeMultiplier = 60.0f * 10,   // 1 hour per second
-  .sizeSun        = 16.0f,
-  .sizeMoon       = 32.0f,
+  .sizeSun        = 32.0f,
+  .sizeMoon       = 16.0f,
   .dayStart       = 7,
   .dayEnd         = 19
 };
@@ -39,10 +36,11 @@ void timeCycleDraw()
   if (!isDay())
     angle += PI;
 
-  float posX = (render.width / 2.0f) + cos(angle) * 170;
-  float posY = (render.height / 2.0f + 86) + sin(angle) * 170;
+  float posX = (GAME_WIDTH / 2.0f) + cos(angle) * 160;
 
-  printf("Degrees: %f\n", degrees);
+  // NOT USE Y
+  // float posY = (GAME_HEIGHT / 2.0f + 86) + sin(angle) * 170;
+  float posY = 32.0f;
 
   DrawCircle(
     posX,
