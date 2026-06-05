@@ -35,7 +35,7 @@ int main(void)
     //////////
     // Draw //
     //////////
-    BeginTextureMode(render.texture);
+    BeginTextureMode(renderTexture);
 
     ClearBackground(BLACK);
 
@@ -58,8 +58,8 @@ int main(void)
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
-    // DrawTexture(render.texture, 0, 0, WHITE);
-    DrawTexturePro(render.texture.texture, (Rectangle){ 0, 0, GAME_WIDTH, -GAME_HEIGHT }, (Rectangle){ 0, 0, GAME_WIDTH * render.scale, GAME_HEIGHT * render.scale }, (Vector2){ 0, 0 }, 0, WHITE);
+    // DrawTexture(renderTexture, 0, 0, WHITE);
+    DrawTexturePro(renderTexture.texture, (Rectangle){ 0, 0, GAME_WIDTH, -GAME_HEIGHT }, (Rectangle){ 0, 0, GAME_WIDTH * scale, GAME_HEIGHT * scale }, (Vector2){ 0, 0 }, 0, WHITE);
 
     EndDrawing();
   }

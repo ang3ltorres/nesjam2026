@@ -8,7 +8,7 @@ Texture2D texture = {0};
 
 void init()
 {
-  render.texture = LoadRenderTexture(GAME_WIDTH, GAME_HEIGHT);
+  renderTexture = LoadRenderTexture(GAME_WIDTH, GAME_HEIGHT);
   texture        = LoadTexture("../res/sprites.png");
 
   playerInit();
@@ -17,6 +17,6 @@ void init()
 void end()
 {
   UnloadTexture(texture);
-  UnloadRenderTexture(render.texture);
+  UnloadRenderTexture(renderTexture);
   
 }

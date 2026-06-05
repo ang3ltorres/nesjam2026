@@ -2,12 +2,7 @@
 
 #include <raylib.h>
 
-typedef struct Render
-{
-  int scale;
-  RenderTexture2D texture;
-} Render;
+extern int scale;
+extern RenderTexture2D renderTexture;
 
 void updateScale();
-
-extern Render render;
