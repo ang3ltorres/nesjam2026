@@ -5,7 +5,7 @@
 #include "render.h"
 #include "terrain.h"
 #include "player.h"
-#include "global.h"
+#include "game.h"
 
 int main(void)
 {
@@ -13,7 +13,7 @@ int main(void)
   const int screenHeight = 720;
 
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-  InitWindow(screenWidth, screenHeight, "JTM - Joy Till Midnight");
+  InitWindow(screenWidth, screenHeight, "Till Midnight");
   SetWindowMinSize(GAME_WIDTH, GAME_HEIGHT);
   SetTargetFPS(60);
 

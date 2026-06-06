@@ -1,6 +1,6 @@
 #include "player.h"
 
-#include "global.h"
+#include "game.h"
 
 Player player = {0};
 

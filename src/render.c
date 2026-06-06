@@ -1,6 +1,6 @@
 #include "render.h"
 
-#include "global.h"
+#include "game.h"
 
 int scale = 1;
 

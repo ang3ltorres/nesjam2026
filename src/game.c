@@ -1,4 +1,4 @@
-#include "global.h"
+#include "game.h"
 
 #include "render.h"
 #include "player.h"

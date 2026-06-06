@@ -1,6 +1,6 @@
 #pragma once
 #include "render.h"
-#include "global.h"
+#include "game.h"
 
 #define TERRAIN_COUNT ((GAME_WIDTH * GAME_HEIGHT) / (TILE_SIZE * TILE_SIZE))
 #define TERRAIN_TILES_X (GAME_WIDTH / TILE_SIZE)

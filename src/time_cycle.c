@@ -1,7 +1,7 @@
 #include "time_cycle.h"
 #include <raylib.h>
 #include <raymath.h>
-#include "global.h"
+#include "game.h"
 
 TimeCycle timeCycle = {
 
