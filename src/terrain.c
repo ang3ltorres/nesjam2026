@@ -36,8 +36,13 @@ Collision terrainCollision(Rectangle rect)
 {
   Collision collision = {0};
 
-  for (int y = rect.y; y < rect.height; y++)
-  for (int x = rect.x; x < rect.width; x++)
+  int startX = rect.x / TILE_SIZE;
+  int endX   = (rect.x + rect.width - 1) / TILE_SIZE;
+  int startY = rect.y / TILE_SIZE;
+  int endY   = (rect.y + rect.height - 1) / TILE_SIZE;
+
+  for (int y = startY; y <= endY; y++)
+  for (int x = startX; x <= endX; x++)
   {
     unsigned char value = terrainGet(x, y);
 
@@ -50,7 +55,7 @@ Collision terrainCollision(Rectangle rect)
       collision.solid = true;
 
     if (collision.water && collision.solid)
-      return collision;;
+      return collision;
   }
 
   return collision;
