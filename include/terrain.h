@@ -25,3 +25,12 @@ static inline void terrainSet(int posX, int posY, unsigned char value)
 void terrainInit();
 
 void terrainDraw();
+
+typedef struct Collision
+{
+  unsigned char solid;
+  unsigned char water;
+}Collision;
+
+Collision terrainCollision(Rectangle rect);
+

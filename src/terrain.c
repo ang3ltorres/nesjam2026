@@ -31,3 +31,27 @@ void terrainDraw()
         WHITE);
   }
 }
+
+Collision terrainCollision(Rectangle rect)
+{
+  Collision collision = {0};
+
+  for (int y = rect.y; y < rect.height; y++)
+  for (int x = rect.x; x < rect.width; x++)
+  {
+    unsigned char value = terrainGet(x, y);
+
+    // If water
+    if (value == 4)
+      collision.water = true;
+    
+      // If solid
+    else if (value)
+      collision.solid = true;
+
+    if (collision.water && collision.solid)
+      return collision;;
+  }
+
+  return collision;
+}

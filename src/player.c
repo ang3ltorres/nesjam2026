@@ -1,5 +1,6 @@
 #include "player.h"
 
+#include "terrain.h"
 #include "game.h"
 
 Player player = {0};
@@ -13,7 +14,14 @@ void playerInit()
 
 void playerUpdate()
 {
+  Rectangle myRect = player.rect;
+  myRect.y += 1;
 
+
+  Collision collision = terrainCollision(myRect);
+
+  if (!collision.solid)
+    player.rect.y += 1;
 }
 
 void playerDraw()
