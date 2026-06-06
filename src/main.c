@@ -3,6 +3,7 @@
 
 #include "time_cycle.h"
 #include "render.h"
+#include "terrain.h"
 #include "player.h"
 #include "global.h"
 
@@ -26,6 +27,7 @@ int main(void)
     // Update //
     ////////////
     timeCycleUpdate();
+    terrainInit();
     playerUpdate();
 
     // Window scale
@@ -50,6 +52,7 @@ int main(void)
     // DrawTexture(texture, 0, 0, WHITE);
 
     timeCycleDraw();
+    terrainDraw();
     playerDraw();
 
     EndTextureMode();

@@ -10,20 +10,18 @@ extern unsigned char terrain[TERRAIN_COUNT];
 
 static inline unsigned char terrainGet(int posX, int posY)
 {
-  int tx = posX / TILE_SIZE;
-  int ty = posY / TILE_SIZE;
-
-  if (tx >= 0 && tx < TERRAIN_TILES_X && ty >= 0 && ty < TERRAIN_TILES_Y)
-    return terrain[ty * TERRAIN_TILES_X + tx];
+  if (posX >= 0 && posX < TERRAIN_TILES_X && posY >= 0 && posY < TERRAIN_TILES_Y)
+    return terrain[posY * TERRAIN_TILES_X + posX];
 
   return 0;
 }
 
 static inline void terrainSet(int posX, int posY, unsigned char value)
 {
-  int tx = posX / TILE_SIZE;
-  int ty = posY / TILE_SIZE;
-
-  if (tx >= 0 && tx < TERRAIN_TILES_X && ty >= 0 && ty < TERRAIN_TILES_Y)
-    terrain[ty * TERRAIN_TILES_X + tx] = value;
+  if (posX >= 0 && posX < TERRAIN_TILES_X && posY >= 0 && posY < TERRAIN_TILES_Y)
+    terrain[posY * TERRAIN_TILES_X + posX] = value;
 }
+
+void terrainInit();
+
+void terrainDraw();

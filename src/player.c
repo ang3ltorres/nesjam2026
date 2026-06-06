@@ -22,7 +22,7 @@ void playerDraw()
   DrawRectangleRec(player.rect, MAGENTA);
   DrawTexturePro(
     texture,
-    (Rectangle){4.0f, 17.0f, 8.0f, 15.0f},
+    (Rectangle){4.0f, 33.0f, 8.0f, 15.0f},
     (Rectangle){player.rect.x - 1.0f, player.rect.y, 8.0f, 15.0f},
     (Vector2){},
     0.0f,
