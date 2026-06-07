@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(
-  jtm
+  game
   VERSION 0.1.0
   LANGUAGES C
 )
@@ -16,18 +16,18 @@ file(
   "${CMAKE_SOURCE_DIR}/src/*.c"
 )
 
-add_executable(jtm)
+add_executable(game)
 
-target_sources(jtm PRIVATE ${SOURCES})
+target_sources(game PRIVATE ${SOURCES})
 
 target_include_directories(
-  jtm
+  game
   PRIVATE
     "${CMAKE_SOURCE_DIR}/include"
 )
 
 target_compile_options(
-  jtm
+  game
   PRIVATE
     -Wall
     -Wextra
@@ -35,7 +35,7 @@ target_compile_options(
 )
 
 target_link_libraries(
-  jtm
+  game
   PRIVATE
     raylib
     m
