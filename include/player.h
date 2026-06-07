@@ -5,7 +5,9 @@
 typedef struct Player
 {
   Rectangle rect;
-}Player;
+  float velY;
+  int coyoteCounter;
+} Player;
 
 extern Player player;
 

@@ -30,7 +30,7 @@ typedef struct Collision
 {
   unsigned char solid;
   unsigned char water;
-}Collision;
+} Collision;
 
 Collision terrainCollision(Rectangle rect);
 
