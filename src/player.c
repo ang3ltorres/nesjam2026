@@ -1,6 +1,5 @@
 #include "player.h"
 #include <raylib.h>
-#include <math.h>
 #include "terrain.h"
 #include "game.h"
 
@@ -47,10 +46,12 @@ void playerUpdate()
   player.rect.y += player.velY;
 
   // Collision resolution
-  while (terrainCollision(player.rect).solid)
+  if (terrainCollision(player.rect).solid)
   {
-    player.rect.y = truncf(player.rect.y);
-    player.rect.y -= 1.0f;
+    // Snap
+    int tileY     = (int)((player.rect.y + player.rect.height) / TILE_SIZE);
+    player.rect.y = (float)(tileY * TILE_SIZE) - player.rect.height;
+    player.velY   = 0.0f;
   }
 }
 

@@ -29,6 +29,7 @@ int main(void)
     timeCycleUpdate();
     terrainInit();
     playerUpdate();
+    printf("Y: %.2f\n", player.rect.y);
 
     // Window scale
     if (IsWindowResized())
