@@ -30,6 +30,7 @@ int main(void)
     terrainInit();
     playerUpdate();
     printf("Y: %.2f\n", player.rect.y);
+    printf("X: %.2f\n", player.rect.x);
 
     // Window scale
     if (IsWindowResized())
