@@ -134,7 +134,7 @@ void playerUpdate()
   player.drill    = button_a;
   player.drillDir = player.dir;
 
-  // Reset drill on B press
+  // Re-arm drill on next button A press
   if (button_a_pressed)
     player.drillUsed = false;
 
@@ -173,7 +173,9 @@ void playerUpdate()
     for (int y = startY; y <= endY && !player.drillUsed; y++)
     for (int x = startX; x <= endX && !player.drillUsed; x++)
     {
-      if (terrainTileGet(x, y) != 0)
+      unsigned char tile = terrainTileGet(x, y);
+
+      if (tile != 0 && tile != 4)
       {
         // drill jump
         if (player.drillDir == 2)
@@ -181,6 +183,16 @@ void playerUpdate()
 
         terrainDamageAdd(x, y);
         player.drillUsed = true;
+
+        // destroy tile
+        unsigned char damage = terrainDamageGet(x, y);
+
+        if (damage >= tile + 1)
+        {
+          int idx = y * TERRAIN_TILES_X + x;
+          terrain[idx].tile   = 0;
+          terrain[idx].damage = 0;
+        }
       }
     }
   }

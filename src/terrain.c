@@ -18,16 +18,31 @@ void terrainDraw()
   for (int x = 0; x < TERRAIN_TILES_X; x++)
   for (int y = 0; y < TERRAIN_TILES_Y; y++)
   {
-    int value = terrainTileGet(x, y);
+    Tile *t = &terrain[y * TERRAIN_TILES_X + x];
 
-    if (value != 0)
+    if (t->tile != 0)
+    {
       DrawTexturePro(
         texture,
-        (Rectangle){(value - 1) * TILE_SIZE, (!isDay() * 16), TILE_SIZE, TILE_SIZE},
+        (Rectangle){(t->tile - 1) * TILE_SIZE, (!isDay() * 16), TILE_SIZE, TILE_SIZE},
         (Rectangle){x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE},
         (Vector2){0.0f, 0.0f},
         0.0f,
-        WHITE);
+        WHITE
+      );
+
+      if (t->damage)
+      {
+        DrawTexturePro(
+          texture,
+          (Rectangle){48.0f - ((t->tile - (t->damage - 1)) * 16), 64.0f, TILE_SIZE, TILE_SIZE},
+          (Rectangle){x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE},
+          (Vector2){0.0f, 0.0f},
+          0.0f,
+          WHITE
+        );
+      }
+    }
   }
 }
 
