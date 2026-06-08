@@ -13,6 +13,12 @@ const int   COYOTE_FRAMES  = 4;
 
 Player player = {0};
 
+static void jump()
+{
+  player.velY = -JUMP_SPEED;
+  player.coyoteCounter = 0;
+}
+
 void playerInit()
 {
   player = (Player)
@@ -82,10 +88,7 @@ void playerUpdate()
 
   // Jump with coyote time
   if (button_b_pressed && player.coyoteCounter > 0)
-  {
-    player.velY = -JUMP_SPEED;
-    player.coyoteCounter = 0;
-  }
+    jump();
 
   /////////////////////////
   // horizontal movement //
@@ -172,6 +175,10 @@ void playerUpdate()
     {
       if (terrainTileGet(x, y) != 0)
       {
+        // drill jump
+        if (player.drillDir == 2)
+          jump();
+
         terrainDamageAdd(x, y);
         player.drillUsed = true;
       }
