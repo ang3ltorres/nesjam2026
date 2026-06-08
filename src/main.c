@@ -27,7 +27,6 @@ int main(void)
     // Update //
     ////////////
     timeCycleUpdate();
-    terrainInit();
     playerUpdate();
     printf("Y: %.2f\n", player.rect.y);
     printf("X: %.2f\n", player.rect.x);

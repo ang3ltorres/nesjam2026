@@ -1,16 +1,16 @@
 #include "terrain.h"
 #include "time_cycle.h"
 
-unsigned char terrain[TERRAIN_COUNT] = {0};
+Tile terrain[TERRAIN_COUNT] = {0};
 
 void terrainInit()
 {
-  terrainSet(3, 3 +4, 1);
-  terrainSet(0, 4 +4, 1);
-  terrainSet(1, 4 +4, 2);
-  terrainSet(2, 4 +4, 3);
-  terrainSet(3, 4 +4, 4);
-  terrainSet(3, 5 +4, 4);
+  terrainTileSet(3, 3 +4, 1);
+  terrainTileSet(0, 4 +4, 1);
+  terrainTileSet(1, 4 +4, 2);
+  terrainTileSet(2, 4 +4, 3);
+  terrainTileSet(3, 4 +4, 4);
+  terrainTileSet(3, 5 +4, 4);
 }
 
 void terrainDraw()
@@ -18,7 +18,7 @@ void terrainDraw()
   for (int x = 0; x < TERRAIN_TILES_X; x++)
   for (int y = 0; y < TERRAIN_TILES_Y; y++)
   {
-    int value = terrainGet(x, y);
+    int value = terrainTileGet(x, y);
 
     if (value != 0)
       DrawTexturePro(
@@ -43,7 +43,7 @@ Collision terrainCollision(Rectangle rect)
   for (int y = startY; y <= endY; y++)
   for (int x = startX; x <= endX; x++)
   {
-    unsigned char value = terrainGet(x, y);
+    unsigned char value = terrainTileGet(x, y);
 
     // If water
     if (value == 4)

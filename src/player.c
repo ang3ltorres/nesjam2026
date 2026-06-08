@@ -17,14 +17,15 @@ void playerInit()
 {
   player = (Player)
   {
-    .rect          = {32.0f, 32.0f, 6.0f, 15.0f},
-    .dir           = 1,
-    .velX          = 0.0f,
-    .velY          = 0.0f,
-    .coyoteCounter = 0,
-    .drill         = false,
-    .drillUsed     = false,
-    .drillDir      = 0
+    .rect           = {32.0f, 32.0f, 6.0f, 15.0f},
+    .dir            = 1,
+    .velX           = 0.0f,
+    .velY           = 0.0f,
+    .coyoteCounter  = 0,
+    .drill          = false,
+    .drillUsed      = false,
+    .drillDir       = 0,
+    .drillRect = {0}
   };
 }
 
@@ -130,37 +131,68 @@ void playerUpdate()
   player.drill    = button_a;
   player.drillDir = player.dir;
 
+  // Reset drill on B press
+  if (button_a_pressed)
+    player.drillUsed = false;
+
   if (player.velY)
   {
     if (button_up)   player.drillDir = -2;
     if (button_down) player.drillDir =  2;
   }
 
+  if (player.drill)
+  {
+    switch (player.drillDir)
+    {
+      // right
+      case  1: player.drillRect = (Rectangle){player.rect.x + 6, player.rect.y +  6, 5, 4}; break;
+
+      // left
+      case -1: player.drillRect = (Rectangle){player.rect.x - 5, player.rect.y +  6, 5, 4}; break;
+
+      // up
+      case -2: player.drillRect = (Rectangle){player.rect.x + 1, player.rect.y -  5, 4, 5}; break;
+
+      // down
+      case  2: player.drillRect = (Rectangle){player.rect.x + 1, player.rect.y + 15, 4, 5}; break;
+    }
+  }
+
+  // Drill-terrain collision
+  if (player.drill && !player.drillUsed)
+  {
+    int startX = player.drillRect.x / TILE_SIZE;
+    int endX   = (int)((player.drillRect.x + player.drillRect.width)  / TILE_SIZE);
+    int startY = player.drillRect.y / TILE_SIZE;
+    int endY   = (int)((player.drillRect.y + player.drillRect.height) / TILE_SIZE);
+
+    for (int y = startY; y <= endY && !player.drillUsed; y++)
+    for (int x = startX; x <= endX && !player.drillUsed; x++)
+    {
+      if (terrainTileGet(x, y) != 0)
+      {
+        terrainDamageAdd(x, y);
+        player.drillUsed = true;
+      }
+    }
+  }
 }
 
 void playerDraw()
 {
-  DrawTexturePro(
-    texture,
-    (Rectangle){4.0f, 33.0f, 8.0f, 15.0f},
-    (Rectangle){player.rect.x - 1.0f, player.rect.y, 8.0f, 15.0f},
-    (Vector2){},
-    0.0f,
-    WHITE
-  );
+  // DrawTexturePro(
+  //   texture,
+  //   (Rectangle){4.0f, 33.0f, 8.0f, 15.0f},
+  //   (Rectangle){player.rect.x - 1.0f, player.rect.y, 8.0f, 15.0f},
+  //   (Vector2){},
+  //   0.0f,
+  //   WHITE
+  // );
   
   DrawRectangleRec(player.rect, MAGENTA);
 
   // Draw drill
   if (player.drill)
-  {
-    if      (player.drillDir ==  1)
-      DrawRectangle(player.rect.x + 6.5, player.rect.y + 6.5, 5, 4, BLUE);
-    else if (player.drillDir == -1)
-      DrawRectangle(player.rect.x - 4.5, player.rect.y + 6.5, 5, 4, BLUE);
-    else if (player.drillDir == -2)
-      DrawRectangle(player.rect.x + 1.5, player.rect.y - 4.5, 4, 5, BLUE);
-    else if (player.drillDir == 2)
-      DrawRectangle(player.rect.x + 1.5, player.rect.y + 15.5, 4, 5, BLUE);
-  }
+    DrawRectangleRec(player.drillRect, player.drillUsed ? RED : BLUE);
 }

@@ -9,9 +9,11 @@ typedef struct Player
   float velX;
   float velY;
   int coyoteCounter;
+  
   bool drill;
   bool drillUsed;
   int  drillDir;
+  Rectangle drillRect;
 } Player;
 
 extern Player player;

@@ -6,20 +6,40 @@
 #define TERRAIN_TILES_X (GAME_WIDTH / TILE_SIZE)
 #define TERRAIN_TILES_Y (GAME_HEIGHT / TILE_SIZE)
 
-extern unsigned char terrain[TERRAIN_COUNT];
+typedef struct Tile
+{
+  unsigned char tile;
+  unsigned char damage;
+} Tile;
 
-static inline unsigned char terrainGet(int posX, int posY)
+extern Tile terrain[TERRAIN_COUNT];
+
+static inline unsigned char terrainTileGet(int posX, int posY)
 {
   if (posX >= 0 && posX < TERRAIN_TILES_X && posY >= 0 && posY < TERRAIN_TILES_Y)
-    return terrain[posY * TERRAIN_TILES_X + posX];
+    return terrain[posY * TERRAIN_TILES_X + posX].tile;
 
   return 0;
 }
 
-static inline void terrainSet(int posX, int posY, unsigned char value)
+static inline void terrainTileSet(int posX, int posY, unsigned char tile)
 {
   if (posX >= 0 && posX < TERRAIN_TILES_X && posY >= 0 && posY < TERRAIN_TILES_Y)
-    terrain[posY * TERRAIN_TILES_X + posX] = value;
+    terrain[posY * TERRAIN_TILES_X + posX].tile = tile;
+}
+
+static inline void terrainDamageAdd(int posX, int posY)
+{
+  if (posX >= 0 && posX < TERRAIN_TILES_X && posY >= 0 && posY < TERRAIN_TILES_Y)
+    terrain[posY * TERRAIN_TILES_X + posX].damage++;
+}
+
+static inline unsigned char terrainDamageGet(int posX, int posY)
+{
+  if (posX >= 0 && posX < TERRAIN_TILES_X && posY >= 0 && posY < TERRAIN_TILES_Y)
+    return terrain[posY * TERRAIN_TILES_X + posX].damage;
+
+  return 0;
 }
 
 void terrainInit();
@@ -33,4 +53,3 @@ typedef struct Collision
 } Collision;
 
 Collision terrainCollision(Rectangle rect);
-
