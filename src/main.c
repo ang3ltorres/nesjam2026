@@ -1,4 +1,5 @@
 #include "game.h"
+#include "control.h"
 
 int main(void)
 {
@@ -6,6 +7,8 @@ int main(void)
 
   while (!WindowShouldClose())
   {
+    controlUpdate();
+
     if (gameScreen)
     {
       ////////////

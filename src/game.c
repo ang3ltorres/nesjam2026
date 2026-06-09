@@ -1,4 +1,5 @@
 #include "game.h"
+#include "control.h"
 
 #include "time_cycle.h"
 #include "render.h"
@@ -110,21 +111,21 @@ void menuUpdate(void)
 {
   if (showAbout)
   {
-    if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ESCAPE))
+    if (control.b[1] || control.start[1] || IsKeyPressed(KEY_ESCAPE))
       showAbout = false;
 
     return;
   }
 
   // Navigate menu options
-  if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S))
+  if (control.down[1] || control.right[1])
     selectedOption = (selectedOption + 1) % numOptions;
 
-  if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W))
+  if (control.up[1] || control.left[1])
     selectedOption = (selectedOption - 1 + numOptions) % numOptions;
 
   // Confirm selection
-  if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+  if (control.b[1] || control.start[1])
   {
     switch (selectedOption)
     {

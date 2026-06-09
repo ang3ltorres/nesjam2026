@@ -1,4 +1,5 @@
 #include "player.h"
+#include "control.h"
 #include <raylib.h>
 #include <string.h>
 
@@ -60,18 +61,6 @@ void playerInit()
 
 void playerUpdate()
 {
-  //////////////
-  // controls //
-  //////////////
-  bool button_left  = IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A);
-  bool button_right = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D);
-  bool button_up    = IsKeyDown(KEY_UP)   || IsKeyDown(KEY_W);
-  bool button_down  = IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
-
-  bool button_a = IsKeyDown(KEY_LEFT_SHIFT);
-
-  bool button_a_pressed = IsKeyPressed(KEY_LEFT_SHIFT);
-  bool button_b_pressed = IsKeyPressed(KEY_SPACE);
 
   /////////////////////////
   // invincibility timer //
@@ -95,7 +84,7 @@ void playerUpdate()
     player.coyoteCounter--;
 
   // Jump with coyote time
-  if (button_b_pressed && player.coyoteCounter > 0)
+  if (control.b[1] && player.coyoteCounter > 0)
     jump();
 
   /////////////////////////
@@ -104,10 +93,10 @@ void playerUpdate()
   int moveDir = 0;
 
   // Disable movement if drill
-  if (button_left)  { moveDir -= 1; player.dir = -1; }
-  if (button_right) { moveDir += 1; player.dir =  1; }
+  if (control.left[0])  { moveDir -= 1; player.dir = -1; }
+  if (control.right[0]) { moveDir += 1; player.dir =  1; }
 
-  if (!player.velY && button_a)
+  if (!player.velY && control.a[0])
     moveDir = 0.0f;
 
   // If not moving, apply friction
@@ -131,12 +120,7 @@ void playerUpdate()
   ///////////////////////////
   float time = GetTime();
 
-  bool left_pressed  = IsKeyPressed(KEY_LEFT)  || IsKeyPressed(KEY_A);
-  bool right_pressed = IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D);
-  bool up_pressed    = IsKeyPressed(KEY_UP)    || IsKeyPressed(KEY_W);
-  bool down_pressed  = IsKeyPressed(KEY_DOWN)  || IsKeyPressed(KEY_S);
-
-  if (left_pressed)
+  if (control.left[1])
   {
     if (time - player.lastTapTime[0] < DOUBLE_TAP_TIME)
     {
@@ -147,7 +131,7 @@ void playerUpdate()
     memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[0] = time;
   }
-  if (right_pressed)
+  if (control.right[1])
   {
     if (time - player.lastTapTime[1] < DOUBLE_TAP_TIME)
     {
@@ -158,7 +142,7 @@ void playerUpdate()
     memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[1] = time;
   }
-  if (up_pressed)
+  if (control.up[1])
   {
     if (time - player.lastTapTime[2] < DOUBLE_TAP_TIME)
     {
@@ -169,7 +153,7 @@ void playerUpdate()
     memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[2] = time;
   }
-  if (down_pressed)
+  if (control.down[1])
   {
     if (time - player.lastTapTime[3] < DOUBLE_TAP_TIME)
     {
@@ -187,10 +171,10 @@ void playerUpdate()
     bool held = false;
     switch (player.quickDrillDir)
     {
-      case -1: held = IsKeyDown(KEY_LEFT)  || IsKeyDown(KEY_A); break;
-      case  1: held = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D); break;
-      case -2: held = IsKeyDown(KEY_UP)    || IsKeyDown(KEY_W); break;
-      case  2: held = IsKeyDown(KEY_DOWN)  || IsKeyDown(KEY_S); break;
+      case -1: held = control.left[0];  break;
+      case  1: held = control.right[0]; break;
+      case -2: held = control.up[0];    break;
+      case  2: held = control.down[0];  break;
     }
     if (!held)
       player.quickDrillDir = 0;
@@ -201,19 +185,19 @@ void playerUpdate()
   ///////////
   // drill //
   ///////////
-  player.drill = button_a || quickDrillActive;
+  player.drill = control.a[0] || quickDrillActive;
 
   if (quickDrillActive)
     player.drillDir = player.quickDrillDir;
-  else if (button_a)
+  else if (control.a[0])
     player.drillDir = player.dir;
 
   // Re-arm drill
-  if (button_a_pressed)
+  if (control.a[1])
     player.drillUsed = false;
 
-  if (button_up)   player.drillDir = -2;
-  if (button_down) player.drillDir =  2;
+  if (control.up[0])   player.drillDir = -2;
+  if (control.down[0]) player.drillDir =  2;
 
   if (player.drill)
   {
