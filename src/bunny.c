@@ -28,6 +28,8 @@ static void bunnySpawn(Bunny *b, int tileX, int tileY)
   b->dir    = 1;
   b->jumpCooldown = 0;
   b->active = true;
+  b->health = 2;
+  b->flashTimer = 0;
 }
 
 void bunnyInit()
@@ -50,6 +52,10 @@ void bunnyUpdate()
     Bunny *b = &bunnies[i];
     if (!b->active)
       continue;
+
+    // Decrement flash timer
+    if (b->flashTimer > 0)
+      b->flashTimer--;
 
     // Gravity
     entityApplyGravity(&b->velY);
@@ -84,7 +90,25 @@ void bunnyUpdate()
 
       // Check collision with player
       if (CheckCollisionRecs(b->rect, player.rect))
-        playerTakeDamage();
+      {
+        // Player drills bunny while falling → bunny takes damage
+        if (player.drill && player.velY > 0 && b->flashTimer == 0)
+        {
+          b->health--;
+          b->flashTimer = 1;
+
+          // Player bounces upward with 1.25x force
+          player.velY = -(player.velY * 1.25f);
+          player.coyoteCounter = 0;
+
+          if (b->health <= 0)
+            b->active = false;
+        }
+        else
+        {
+          playerTakeDamage();
+        }
+      }
     }
     else
     {
@@ -125,12 +149,16 @@ void bunnyUpdate()
 
 void bunnyDraw()
 {
-  Color color = isDay() ? WHITE : RED;
-
   for (int i = 0; i < MAX_BUNNIES; i++)
   {
     if (!bunnies[i].active)
       continue;
+
+    Color color;
+    if (bunnies[i].flashTimer > 0)
+      color = WHITE;
+    else
+      color = isDay() ? WHITE : RED;
 
     DrawRectangleRec(bunnies[i].rect, color);
   }

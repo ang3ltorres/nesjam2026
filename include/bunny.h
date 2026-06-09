@@ -11,6 +11,8 @@ typedef struct Bunny
   int dir;
   int jumpCooldown;
   bool active;
+  int health;
+  int flashTimer;
 } Bunny;
 
 extern Bunny bunnies[MAX_BUNNIES];

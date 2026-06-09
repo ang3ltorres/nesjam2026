@@ -1,5 +1,7 @@
 #include "player.h"
 #include <raylib.h>
+#include <string.h>
+
 #include <stdlib.h>
 #include "entity.h"
 #include "terrain.h"
@@ -141,6 +143,8 @@ void playerUpdate()
       player.quickDrillDir = -1;
       player.drillUsed = false;
     }
+
+    memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[0] = time;
   }
   if (right_pressed)
@@ -150,6 +154,8 @@ void playerUpdate()
       player.quickDrillDir = 1;
       player.drillUsed = false;
     }
+
+    memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[1] = time;
   }
   if (up_pressed)
@@ -159,6 +165,8 @@ void playerUpdate()
       player.quickDrillDir = -2;
       player.drillUsed = false;
     }
+
+    memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[2] = time;
   }
   if (down_pressed)
@@ -168,6 +176,8 @@ void playerUpdate()
       player.quickDrillDir = 2;
       player.drillUsed = false;
     }
+
+    memset(player.lastTapTime, 0, sizeof(float) * 4);
     player.lastTapTime[3] = time;
   }
 
