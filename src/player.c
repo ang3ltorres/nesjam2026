@@ -17,7 +17,6 @@ const int   COYOTE_FRAMES  = 4;
 const int   PLAYER_MAX_HEALTH      = 5;
 const float INVINCIBILITY_DURATION = 2.0f;
 const float FLASH_INTERVAL         = 0.1f;
-const float DOUBLE_TAP_TIME        = 0.3f;
 
 Player player = {0};
 
@@ -52,8 +51,6 @@ void playerInit()
     .drillUsed          = false,
     .drillDir           = 0,
     .drillRect          = {0},
-    .lastTapTime        = {-100.0f, -100.0f, -100.0f, -100.0f},
-    .quickDrillDir      = 0,
     .health             = PLAYER_MAX_HEALTH,
     .invincibilityTimer = 0.0f,
   };
@@ -115,82 +112,16 @@ void playerUpdate()
   player.rect.x += player.velX;
   entityResolveHorizontalCollision(&player.rect, &player.velX);
 
-  ///////////////////////////
-  // quick-drill detection //
-  ///////////////////////////
-  float time = GetTime();
-
-  if (control.left[1])
-  {
-    if (time - player.lastTapTime[0] < DOUBLE_TAP_TIME)
-    {
-      player.quickDrillDir = -1;
-      player.drillUsed = false;
-    }
-
-    memset(player.lastTapTime, 0, sizeof(float) * 4);
-    player.lastTapTime[0] = time;
-  }
-  if (control.right[1])
-  {
-    if (time - player.lastTapTime[1] < DOUBLE_TAP_TIME)
-    {
-      player.quickDrillDir = 1;
-      player.drillUsed = false;
-    }
-
-    memset(player.lastTapTime, 0, sizeof(float) * 4);
-    player.lastTapTime[1] = time;
-  }
-  if (control.up[1])
-  {
-    if (time - player.lastTapTime[2] < DOUBLE_TAP_TIME)
-    {
-      player.quickDrillDir = -2;
-      player.drillUsed = false;
-    }
-
-    memset(player.lastTapTime, 0, sizeof(float) * 4);
-    player.lastTapTime[2] = time;
-  }
-  if (control.down[1])
-  {
-    if (time - player.lastTapTime[3] < DOUBLE_TAP_TIME)
-    {
-      player.quickDrillDir = 2;
-      player.drillUsed = false;
-    }
-
-    memset(player.lastTapTime, 0, sizeof(float) * 4);
-    player.lastTapTime[3] = time;
-  }
-
-  // Cancel quick-drill if held key is released
-  if (player.quickDrillDir != 0)
-  {
-    bool held = false;
-    switch (player.quickDrillDir)
-    {
-      case -1: held = control.left[0];  break;
-      case  1: held = control.right[0]; break;
-      case -2: held = control.up[0];    break;
-      case  2: held = control.down[0];  break;
-    }
-    if (!held)
-      player.quickDrillDir = 0;
-  }
-
-  bool quickDrillActive = player.quickDrillDir != 0;
-
   ///////////
   // drill //
   ///////////
-  player.drill = control.a[0] || quickDrillActive;
+  player.drill = control.a[0];
 
-  if (quickDrillActive)
-    player.drillDir = player.quickDrillDir;
-  else if (control.a[0])
-    player.drillDir = player.dir;
+  if (player.drill)
+  {
+    if (player.velY && (control.left[0] || control.right[0]))
+      player.drillDir = player.dir;
+  }
 
   // Re-arm drill
   if (control.a[1])
@@ -227,7 +158,7 @@ void playerUpdate()
       {
         if (player.drillDir == 2)
         {
-          player.velY = -(player.velY * 1.14f);
+          player.velY = -((player.velY + 0.1f) * 1.14f);
           player.coyoteCounter = 0;
         }
 
@@ -235,6 +166,8 @@ void playerUpdate()
           player.velY = JUMP_SPEED;
 
         terrainDamageAdd(x, y);
+
+        if (player.drillDir != 2 && player.drillDir != -2)
         player.drillUsed = true;
 
         unsigned char damage = terrainDamageGet(x, y);
@@ -245,7 +178,8 @@ void playerUpdate()
           terrain[idx].tile   = 0;
           terrain[idx].damage = 0;
         }
-        break;
+        
+        return;
       }
     }
   }

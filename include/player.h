@@ -15,9 +15,6 @@ typedef struct Player
   int  drillDir;
   Rectangle drillRect;
 
-  float lastTapTime[4];
-  int quickDrillDir;
-
   int health;
   float invincibilityTimer;
 } Player;
