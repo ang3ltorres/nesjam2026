@@ -14,6 +14,7 @@ const int   COYOTE_FRAMES  = 4;
 const int   PLAYER_MAX_HEALTH      = 5;
 const float INVINCIBILITY_DURATION = 2.0f;
 const float FLASH_INTERVAL         = 0.1f;
+const float DOUBLE_TAP_TIME        = 0.3f;
 
 Player player = {0};
 
@@ -48,6 +49,8 @@ void playerInit()
     .drillUsed          = false,
     .drillDir           = 0,
     .drillRect          = {0},
+    .lastTapTime        = {-100.0f, -100.0f, -100.0f, -100.0f},
+    .quickDrillDir      = 0,
     .health             = PLAYER_MAX_HEALTH,
     .invincibilityTimer = 0.0f,
   };
@@ -121,13 +124,81 @@ void playerUpdate()
   player.rect.x += player.velX;
   entityResolveHorizontalCollision(&player.rect, &player.velX);
 
+  ///////////////////////////
+  // quick-drill detection //
+  ///////////////////////////
+  float time = GetTime();
+
+  bool left_pressed  = IsKeyPressed(KEY_LEFT)  || IsKeyPressed(KEY_A);
+  bool right_pressed = IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D);
+  bool up_pressed    = IsKeyPressed(KEY_UP)    || IsKeyPressed(KEY_W);
+  bool down_pressed  = IsKeyPressed(KEY_DOWN)  || IsKeyPressed(KEY_S);
+
+  if (left_pressed)
+  {
+    if (time - player.lastTapTime[0] < DOUBLE_TAP_TIME)
+    {
+      player.quickDrillDir = -1;
+      player.drillUsed = false;
+    }
+    player.lastTapTime[0] = time;
+  }
+  if (right_pressed)
+  {
+    if (time - player.lastTapTime[1] < DOUBLE_TAP_TIME)
+    {
+      player.quickDrillDir = 1;
+      player.drillUsed = false;
+    }
+    player.lastTapTime[1] = time;
+  }
+  if (up_pressed)
+  {
+    if (time - player.lastTapTime[2] < DOUBLE_TAP_TIME)
+    {
+      player.quickDrillDir = -2;
+      player.drillUsed = false;
+    }
+    player.lastTapTime[2] = time;
+  }
+  if (down_pressed)
+  {
+    if (time - player.lastTapTime[3] < DOUBLE_TAP_TIME)
+    {
+      player.quickDrillDir = 2;
+      player.drillUsed = false;
+    }
+    player.lastTapTime[3] = time;
+  }
+
+  // Cancel quick-drill if held key is released
+  if (player.quickDrillDir != 0)
+  {
+    bool held = false;
+    switch (player.quickDrillDir)
+    {
+      case -1: held = IsKeyDown(KEY_LEFT)  || IsKeyDown(KEY_A); break;
+      case  1: held = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D); break;
+      case -2: held = IsKeyDown(KEY_UP)    || IsKeyDown(KEY_W); break;
+      case  2: held = IsKeyDown(KEY_DOWN)  || IsKeyDown(KEY_S); break;
+    }
+    if (!held)
+      player.quickDrillDir = 0;
+  }
+
+  bool quickDrillActive = player.quickDrillDir != 0;
+
   ///////////
   // drill //
   ///////////
-  player.drill    = button_a;
-  player.drillDir = player.dir;
+  player.drill = button_a || quickDrillActive;
 
-  // Re-arm drill on next button A press
+  if (quickDrillActive)
+    player.drillDir = player.quickDrillDir;
+  else if (button_a)
+    player.drillDir = player.dir;
+
+  // Re-arm drill
   if (button_a_pressed)
     player.drillUsed = false;
 
@@ -138,21 +209,14 @@ void playerUpdate()
   {
     switch (player.drillDir)
     {
-      // right
       case  1: player.drillRect = (Rectangle){player.rect.x + 6, player.rect.y +  6, 5, 4}; break;
-
-      // left
       case -1: player.drillRect = (Rectangle){player.rect.x - 5, player.rect.y +  6, 5, 4}; break;
-
-      // up
       case -2: player.drillRect = (Rectangle){player.rect.x + 1, player.rect.y -  5, 4, 5}; break;
-
-      // down
       case  2: player.drillRect = (Rectangle){player.rect.x + 1, player.rect.y + 15, 4, 5}; break;
     }
   }
 
-  // Drill-terrain collision
+  // Drill-terrain collision (same for both drill types)
   if (player.drill && !player.drillUsed)
   {
     int startX = player.drillRect.x / TILE_SIZE;
@@ -160,28 +224,25 @@ void playerUpdate()
     int startY = player.drillRect.y / TILE_SIZE;
     int endY   = (int)((player.drillRect.y + player.drillRect.height) / TILE_SIZE);
 
-    for (int y = startY; y <= endY && !player.drillUsed; y++)
-    for (int x = startX; x <= endX && !player.drillUsed; x++)
+    for (int y = startY; y <= endY; y++)
+    for (int x = startX; x <= endX; x++)
     {
       unsigned char tile = terrainTileGet(x, y);
 
       if (tile != 0 && tile != 4)
       {
-        // drill jump (bounce when drilling down into ground)
         if (player.drillDir == 2)
         {
           player.velY = -(player.velY * 1.14f);
           player.coyoteCounter = 0;
         }
 
-        // inverse drill jump (bounce down when drilling up into ceiling)
         if (player.drillDir == -2)
           player.velY = JUMP_SPEED;
 
         terrainDamageAdd(x, y);
         player.drillUsed = true;
 
-        // destroy tile
         unsigned char damage = terrainDamageGet(x, y);
 
         if (damage >= tile + 1)
@@ -190,6 +251,7 @@ void playerUpdate()
           terrain[idx].tile   = 0;
           terrain[idx].damage = 0;
         }
+        break;
       }
     }
   }

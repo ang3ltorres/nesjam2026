@@ -5,10 +5,10 @@
 
 TimeCycle timeCycle = {
 
-  .time           = 0.0f,
+  .time           = 500.0f,
   .timeMultiplier = 60.0f * 1,   // 1 hour per second
-  .sizeSun        = 20.0f,
-  .sizeMoon       = 12.0f,
+  .sizeSun        = 12.0f,
+  .sizeMoon       = 8.0f,
   .dayStart       = 7,
   .dayEnd         = 19
 };
@@ -39,7 +39,7 @@ void timeCycleDraw()
   float posX = (GAME_WIDTH / 2.0f) + cos(angle) * 160;
 
   // Not using complete circle
-  float posY = 12 + ((GAME_HEIGHT / 2.0f + 86) + sin(angle) * 170) / 4.0f;
+  float posY = 4 + ((GAME_HEIGHT / 2.0f + 86) + sin(angle) * 170) / 4.0f;
   // float posY = 32.0f;
 
   DrawCircle(
