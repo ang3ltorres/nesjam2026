@@ -5,12 +5,15 @@ Tile terrain[TERRAIN_COUNT] = {0};
 
 void terrainInit()
 {
-  terrainTileSet(3, 3 +4, 1);
-  terrainTileSet(0, 4 +4, 1);
-  terrainTileSet(1, 4 +4, 2);
-  terrainTileSet(2, 4 +4, 3);
-  terrainTileSet(3, 4 +4, 4);
-  terrainTileSet(3, 5 +4, 4);
+  for (int j = 4; j < 10; j++)
+  for (int i = 0; i < 12; i++)
+    terrainTileSet(i, j, 2);
+
+  terrainTileSet(2, 4, 0);
+  terrainTileSet(2, 5, 0);
+  terrainTileSet(2, 6, 0);
+  terrainTileSet(2, 7, 0);
+  terrainTileSet(2, 8, 0);
 }
 
 void terrainDraw()

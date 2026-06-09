@@ -69,10 +69,21 @@ void playerUpdate()
   // Vertical collision resolution
   if (terrainCollision(player.rect).solid)
   {
-    // Snap
-    int tileY     = (int)((player.rect.y + player.rect.height) / TILE_SIZE);
-    player.rect.y = (float)(tileY * TILE_SIZE) - player.rect.height;
-    player.velY   = 0.0f;
+    // Hit ceiling
+    if (player.velY < 0)
+    {
+      int tileY     = (int)(player.rect.y / TILE_SIZE);
+      player.rect.y = (float)((tileY + 1) * TILE_SIZE);
+    }
+
+    // Hit floor
+    else
+    {
+      int tileY     = (int)((player.rect.y + player.rect.height) / TILE_SIZE);
+      player.rect.y = (float)(tileY * TILE_SIZE) - player.rect.height;
+    }
+
+    player.velY = 0.0f;
   }
 
   ////////////
@@ -138,11 +149,8 @@ void playerUpdate()
   if (button_a_pressed)
     player.drillUsed = false;
 
-  if (player.velY)
-  {
-    if (button_up)   player.drillDir = -2;
-    if (button_down) player.drillDir =  2;
-  }
+  if (button_up)   player.drillDir = -2;
+  if (button_down) player.drillDir =  2;
 
   if (player.drill)
   {
@@ -177,9 +185,13 @@ void playerUpdate()
 
       if (tile != 0 && tile != 4)
       {
-        // drill jump
+        // drill jump (bounce when drilling down into ground)
         if (player.drillDir == 2)
           jump();
+
+        // inverse drill jump (bounce down when drilling up into ceiling)
+        if (player.drillDir == -2)
+          player.velY = JUMP_SPEED;
 
         terrainDamageAdd(x, y);
         player.drillUsed = true;
