@@ -3,6 +3,13 @@
 
 #define MAX_BUNNIES 10
 
+typedef enum {
+  BUNNY_IDLE = 0,
+  BUNNY_ALERT,
+  BUNNY_CHASE,
+  BUNNY_CONFUSED
+} BunnyState;
+
 typedef struct Bunny
 {
   Rectangle rect;
@@ -13,6 +20,8 @@ typedef struct Bunny
   bool active;
   int health;
   int flashTimer;
+  int state;
+  int stateTimer;
 } Bunny;
 
 extern Bunny bunnies[MAX_BUNNIES];
