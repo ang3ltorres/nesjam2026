@@ -3,6 +3,7 @@
 #include "render.h"
 #include "terrain.h"
 #include "player.h"
+#include "bunny.h"
 
 Texture2D texture = {0};
 
@@ -14,6 +15,7 @@ void init()
 
   terrainInit();
   playerInit();
+  bunnyInit();
 }
 
 void end()

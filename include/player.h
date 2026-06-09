@@ -9,11 +9,14 @@ typedef struct Player
   float velX;
   float velY;
   int coyoteCounter;
-  
+
   bool drill;
   bool drillUsed;
   int  drillDir;
   Rectangle drillRect;
+
+  int health;
+  float invincibilityTimer;
 } Player;
 
 extern Player player;
@@ -21,4 +24,5 @@ extern Player player;
 void playerInit();
 void playerUpdate();
 void playerDraw();
+void playerTakeDamage();
 

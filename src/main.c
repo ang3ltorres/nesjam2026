@@ -5,6 +5,7 @@
 #include "render.h"
 #include "terrain.h"
 #include "player.h"
+#include "bunny.h"
 #include "game.h"
 
 int main(void)
@@ -28,8 +29,7 @@ int main(void)
     ////////////
     timeCycleUpdate();
     playerUpdate();
-    printf("Y: %.2f\n", player.rect.y);
-    printf("X: %.2f\n", player.rect.x);
+    bunnyUpdate();
 
     // Window scale
     if (IsWindowResized())
@@ -42,19 +42,23 @@ int main(void)
 
     ClearBackground(BLACK);
 
-     // draw time in hours/minutes
+    timeCycleDraw();
+    terrainDraw();
+    bunnyDraw();
+    playerDraw();
+
+    // draw time in hours/minutes
     int hours = ((int)timeCycle.time / 60) % 24;
     int minutes = (int)timeCycle.time % 60;
     DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
 
-    // draw time raw
-    // DrawText(TextFormat("RAW Time: %f", timeCycle.time), 0, 32, 10, RAYWHITE);
-
-    // DrawTexture(texture, 0, 0, WHITE);
-
-    timeCycleDraw();
-    terrainDraw();
-    playerDraw();
+    // draw health hearts
+    for (int i = 0; i < 5; i++)
+    {
+      int hx = GAME_WIDTH  - 8 - i * 8;
+      int hy = GAME_HEIGHT - 8;
+      DrawRectangle(hx, hy, 6, 6, (i < player.health) ? RED : DARKGRAY);
+    }
 
     EndTextureMode();
 

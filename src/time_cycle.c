@@ -6,7 +6,7 @@
 TimeCycle timeCycle = {
 
   .time           = 0.0f,
-  .timeMultiplier = 60.0f * 10,   // 1 hour per second
+  .timeMultiplier = 60.0f * 1,   // 1 hour per second
   .sizeSun        = 20.0f,
   .sizeMoon       = 12.0f,
   .dayStart       = 7,

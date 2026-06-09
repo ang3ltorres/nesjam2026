@@ -1,15 +1,19 @@
 #include "player.h"
 #include <raylib.h>
+#include <stdlib.h>
+#include "entity.h"
 #include "terrain.h"
 #include "game.h"
 
-const float GRAVITY        = 0.085f;
-const float MAX_FALL_SPEED = 2.0f;
 const float JUMP_SPEED     = 2.0f;
 const float MOVE_SPEED     = 0.1f;
 const float FRICTION       = 0.25f;
 const float MAX_WALK_SPEED = 1.0f;
 const int   COYOTE_FRAMES  = 4;
+
+const int   PLAYER_MAX_HEALTH      = 5;
+const float INVINCIBILITY_DURATION = 2.0f;
+const float FLASH_INTERVAL         = 0.1f;
 
 Player player = {0};
 
@@ -19,19 +23,33 @@ static void jump()
   player.coyoteCounter = 0;
 }
 
+void playerTakeDamage()
+{
+  if (player.invincibilityTimer > 0.0f)
+    return;
+
+  player.health--;
+  player.invincibilityTimer = INVINCIBILITY_DURATION;
+
+  if (player.health <= 0)
+    playerInit();
+}
+
 void playerInit()
 {
   player = (Player)
   {
-    .rect           = {32.0f, 32.0f, 6.0f, 15.0f},
-    .dir            = 1,
-    .velX           = 0.0f,
-    .velY           = 0.0f,
-    .coyoteCounter  = 0,
-    .drill          = false,
-    .drillUsed      = false,
-    .drillDir       = 0,
-    .drillRect = {0}
+    .rect               = {32.0f, 32.0f + 32.0f, 6.0f, 15.0f},
+    .dir                = 1,
+    .velX               = 0.0f,
+    .velY               = 0.0f,
+    .coyoteCounter      = 0,
+    .drill              = false,
+    .drillUsed          = false,
+    .drillDir           = 0,
+    .drillRect          = {0},
+    .health             = PLAYER_MAX_HEALTH,
+    .invincibilityTimer = 0.0f,
   };
 }
 
@@ -45,54 +63,28 @@ void playerUpdate()
   bool button_up    = IsKeyDown(KEY_UP)   || IsKeyDown(KEY_W);
   bool button_down  = IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
 
-  bool button_left_pressed  = IsKeyPressed(KEY_LEFT)  || IsKeyPressed(KEY_A);
-  bool button_right_pressed = IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D);
-  bool button_up_pressed    = IsKeyPressed(KEY_UP)    || IsKeyPressed(KEY_W);
-  bool button_down_pressed  = IsKeyPressed(KEY_DOWN)  || IsKeyPressed(KEY_S);
-
   bool button_a = IsKeyDown(KEY_LEFT_SHIFT);
-  bool button_b = IsKeyDown(KEY_SPACE);
 
   bool button_a_pressed = IsKeyPressed(KEY_LEFT_SHIFT);
   bool button_b_pressed = IsKeyPressed(KEY_SPACE);
 
+  /////////////////////////
+  // invincibility timer //
+  /////////////////////////
+  if (player.invincibilityTimer > 0.0f)
+    player.invincibilityTimer -= GetFrameTime();
+
   /////////////
   // gravity //
   /////////////
-  player.velY += GRAVITY;
-  if (player.velY > MAX_FALL_SPEED)
-    player.velY = MAX_FALL_SPEED;
-
-  // Move vertically
+  entityApplyGravity(&player.velY);
   player.rect.y += player.velY;
-
-  // Vertical collision resolution
-  if (terrainCollision(player.rect).solid)
-  {
-    // Hit ceiling
-    if (player.velY < 0)
-    {
-      int tileY     = (int)(player.rect.y / TILE_SIZE);
-      player.rect.y = (float)((tileY + 1) * TILE_SIZE);
-    }
-
-    // Hit floor
-    else
-    {
-      int tileY     = (int)((player.rect.y + player.rect.height) / TILE_SIZE);
-      player.rect.y = (float)(tileY * TILE_SIZE) - player.rect.height;
-    }
-
-    player.velY = 0.0f;
-  }
+  entityResolveVerticalCollision(&player.rect, &player.velY);
 
   ////////////
   // coyote //
   ////////////
-  Rectangle foot = player.rect;
-  foot.y += 1;
-  
-  if (terrainCollision(foot).solid)
+  if (entityHasFloor(player.rect))
     player.coyoteCounter = COYOTE_FRAMES;
   else if (player.coyoteCounter > 0)
     player.coyoteCounter--;
@@ -127,17 +119,7 @@ void playerUpdate()
 
   // Move horizontally
   player.rect.x += player.velX;
-
-  // Horizontal collision resolution
-  if (terrainCollision(player.rect).solid)
-  {
-    if (player.velX > 0)
-      player.rect.x = (float)((int)((player.rect.x + player.rect.width) / TILE_SIZE) * TILE_SIZE) - player.rect.width;
-    else
-      player.rect.x = (float)((int)(player.rect.x / TILE_SIZE) * TILE_SIZE + TILE_SIZE);
-
-    player.velX = 0.0f;
-  }
+  entityResolveHorizontalCollision(&player.rect, &player.velX);
 
   ///////////
   // drill //
@@ -187,7 +169,10 @@ void playerUpdate()
       {
         // drill jump (bounce when drilling down into ground)
         if (player.drillDir == 2)
-          jump();
+        {
+          player.velY = -(player.velY * 1.14f);
+          player.coyoteCounter = 0;
+        }
 
         // inverse drill jump (bounce down when drilling up into ceiling)
         if (player.drillDir == -2)
@@ -212,16 +197,15 @@ void playerUpdate()
 
 void playerDraw()
 {
-  // DrawTexturePro(
-  //   texture,
-  //   (Rectangle){4.0f, 33.0f, 8.0f, 15.0f},
-  //   (Rectangle){player.rect.x - 1.0f, player.rect.y, 8.0f, 15.0f},
-  //   (Vector2){},
-  //   0.0f,
-  //   WHITE
-  // );
+  // Flash when invincible
+  if (player.invincibilityTimer > 0.0f)
+  {
+    int flashPhase = (int)(player.invincibilityTimer / FLASH_INTERVAL);
+    if (flashPhase % 2 == 0)
+      return;
+  }
   
-  DrawRectangleRec(player.rect, MAGENTA);
+  DrawRectangleRec(player.rect, RED);
 
   // Draw drill
   if (player.drill)
