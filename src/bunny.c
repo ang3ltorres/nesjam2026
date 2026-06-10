@@ -8,18 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define BUNNY_SIZE_X  8.0f
-#define BUNNY_SIZE_Y  8.0f
-#define BUNNY_MOVE_SPEED      0.04f
-#define BUNNY_MAX_WALK_SPEED  0.5f
-#define BUNNY_JUMP_SPEED      1.8f
-#define BUNNY_CHASE_SPEED     0.08f
-#define BUNNY_MAX_CHASE_SPEED 1.0f
-#define BUNNY_JUMP_COOLDOWN   30
-#define BUNNY_DAMAGE_COOLDOWN 20
-#define BUNNY_DETECT_RADIUS   80.0f
-#define BUNNY_CONFUSED_DURATION 45
-#define BUNNY_ALERT_DURATION    12
+
 
 Bunny bunnies[MAX_BUNNIES] = {0};
 
@@ -248,21 +237,30 @@ void bunnyDraw()
     if (!bunnies[i].active)
       continue;
 
-    Color color;
-    if (isDay() || bunnies[i].flashTimer > 0)
-      color = WHITE;
-    else
-    {
-      switch (bunnies[i].state)
-      {
-        case BUNNY_ALERT:    color = ORANGE;  break;
-        case BUNNY_CHASE:    color = RED;     break;
-        case BUNNY_CONFUSED: color = YELLOW;  break;
-        case BUNNY_IDLE:
-        default:             color = (Color){80, 0, 0, 200}; break;
-      }
-    }
+    DrawTexturePro(
+      texture,
+      (Rectangle){4.0f, 100.0f + (!isDay() * 16.0f), BUNNY_SIZE_X, BUNNY_SIZE_Y},
+      (Rectangle){bunnies[i].rect.x, bunnies[i].rect.y, BUNNY_SIZE_X, BUNNY_SIZE_Y},
+      (Vector2){0.0f, 0.0f},
+      0.0f,
+      WHITE
+    );
 
-    DrawRectangleRec(bunnies[i].rect, color);
+    // Color color;
+    // if (isDay() || bunnies[i].flashTimer > 0)
+    //   color = WHITE;
+    // else
+    // {
+    //   switch (bunnies[i].state)
+    //   {
+    //     case BUNNY_ALERT:    color = ORANGE;  break;
+    //     case BUNNY_CHASE:    color = RED;     break;
+    //     case BUNNY_CONFUSED: color = YELLOW;  break;
+    //     case BUNNY_IDLE:
+    //     default:             color = (Color){80, 0, 0, 200}; break;
+    //   }
+    // }
+
+    // DrawRectangleRec(bunnies[i].rect, color);
   }
 }

@@ -49,7 +49,7 @@ void playerInit()
     .coyoteCounter      = 0,
     .drill              = false,
     .drillUsed          = false,
-    .drillDir           = 0,
+    .drillDir           = 1,
     .drillRect          = {0},
     .health             = PLAYER_MAX_HEALTH,
     .invincibilityTimer = 0.0f,
@@ -187,16 +187,25 @@ void playerUpdate()
 
 void playerDraw()
 {
-  // Flash when invincible
+  // Skip draw when invincible (flash)
   if (player.invincibilityTimer > 0.0f)
   {
     int flashPhase = (int)(player.invincibilityTimer / FLASH_INTERVAL);
     if (flashPhase % 2 == 0)
       return;
   }
-  
-  DrawRectangleRec(player.rect, RED);
 
+  // DrawRectangleRec(player.rect, RED);
+
+  DrawTexturePro(
+    texture,
+    (Rectangle){4.0f, 33.0f, 8.0f, 15.0f},
+    (Rectangle){player.rect.x - 1.0f, player.rect.y, 8.0f, 15.0f},
+    (Vector2){},
+    0.0f,
+    WHITE
+  );
+  
   // Draw drill
   if (player.drill)
     DrawRectangleRec(player.drillRect, player.drillUsed ? RED : BLUE);

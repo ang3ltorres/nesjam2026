@@ -2,6 +2,18 @@
 #include <raylib.h>
 
 #define MAX_BUNNIES 10
+#define BUNNY_SIZE_X  8.0f
+#define BUNNY_SIZE_Y  8.0f
+#define BUNNY_MOVE_SPEED      0.04f
+#define BUNNY_MAX_WALK_SPEED  0.5f
+#define BUNNY_JUMP_SPEED      1.8f
+#define BUNNY_CHASE_SPEED     0.08f
+#define BUNNY_MAX_CHASE_SPEED 1.0f
+#define BUNNY_JUMP_COOLDOWN   30
+#define BUNNY_DAMAGE_COOLDOWN 20
+#define BUNNY_DETECT_RADIUS   80.0f
+#define BUNNY_CONFUSED_DURATION 45
+#define BUNNY_ALERT_DURATION    12
 
 typedef enum {
   BUNNY_IDLE = 0,

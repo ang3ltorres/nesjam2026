@@ -24,8 +24,8 @@ void init()
   SetTargetFPS(60);
 
   renderTexture = LoadRenderTexture(GAME_WIDTH, GAME_HEIGHT);
-  texture       = LoadTexture("../res/sprites.png");
-  font          = LoadFontEx("../res/PressStart2P-Regular.ttf", 8, NULL, 0);
+  texture       = LoadTexture("assets/sprite.png");
+  font          = LoadFontEx("assets/PressStart2P-Regular.ttf", 8, NULL, 0);
 
   terrainInit();
   playerInit();
@@ -89,13 +89,14 @@ void draw()
   // draw time in hours/minutes (screen-space UI)
   int hours = ((int)timeCycle.time / 60) % 24;
   int minutes = (int)timeCycle.time % 60;
-  DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
+  // DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
+  DrawTextEx(font, TextFormat("%02i:%02i", hours, minutes), (Vector2){0.0f, 0.0f}, 8, 0.0f, RAYWHITE);
 
   // draw health hearts (screen-space UI)
   for (int i = 0; i < 5; i++)
   {
     int hx = GAME_WIDTH  - 8 - i * 8;
-    int hy = GAME_HEIGHT - 8;
+    int hy = 8;
     DrawRectangle(hx, hy, 6, 6, (i < player.health) ? RED : DARKGRAY);
   }
 
