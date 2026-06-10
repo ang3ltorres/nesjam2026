@@ -138,8 +138,8 @@ void playerUpdate()
 
         terrainDamageAdd(x, y);
 
-        if (player.drillDir != 2 && player.drillDir != -2)
-        player.drillUsed = true;
+        if ((player.drillDir != 2 && player.drillDir != -2) || (player.velY > -0.3f && player.velY < 0.3f))
+          player.drillUsed = true;
 
         unsigned char damage = terrainDamageGet(x, y);
 
