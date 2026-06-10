@@ -26,6 +26,9 @@ void end();
 void update();
 void draw();
 
+// ui
+void uiDraw();
+
 // menu screen
 void menuInit();
 void menuUpdate();

@@ -1,7 +1,7 @@
 #pragma once
 #include <raylib.h>
 
-#define MAX_BUNNIES 10
+#define MAX_BUNNIES 32
 #define BUNNY_SIZE_X  8.0f
 #define BUNNY_SIZE_Y  8.0f
 #define BUNNY_MOVE_SPEED      0.04f
@@ -12,8 +12,10 @@
 #define BUNNY_JUMP_COOLDOWN   30
 #define BUNNY_DAMAGE_COOLDOWN 20
 #define BUNNY_DETECT_RADIUS   80.0f
-#define BUNNY_CONFUSED_DURATION 45
-#define BUNNY_ALERT_DURATION    12
+#define BUNNY_CONFUSED_DURATION   45
+#define BUNNY_ALERT_DURATION       12
+#define BUNNY_INVINCIBILITY_DURATION 1.0f
+#define BUNNY_FLASH_INTERVAL        0.1f
 
 typedef enum {
   BUNNY_IDLE = 0,
@@ -29,13 +31,13 @@ typedef struct Bunny
   float velY;
   int dir;
   int jumpCooldown;
-  bool active;
   int health;
-  int flashTimer;
+  float invincibilityTimer;
   int state;
   int stateTimer;
 } Bunny;
 
+extern int bunniesCount;
 extern Bunny bunnies[MAX_BUNNIES];
 
 void bunnyInit();

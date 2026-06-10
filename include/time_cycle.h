@@ -9,6 +9,9 @@ typedef struct TimeCycle
   int dayStart;
   int dayEnd;
 
+  int hour;
+  int minute;
+
 } TimeCycle;
 
 void timeCycleUpdate();

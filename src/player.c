@@ -8,35 +8,7 @@
 #include "terrain.h"
 #include "game.h"
 
-const float JUMP_SPEED     = 2.0f;
-const float MOVE_SPEED     = 0.1f;
-const float FRICTION       = 0.25f;
-const float MAX_WALK_SPEED = 1.0f;
-const int   COYOTE_FRAMES  = 4;
-
-const int   PLAYER_MAX_HEALTH      = 5;
-const float INVINCIBILITY_DURATION = 2.0f;
-const float FLASH_INTERVAL         = 0.1f;
-
 Player player = {0};
-
-static void jump()
-{
-  player.velY = -JUMP_SPEED;
-  player.coyoteCounter = 0;
-}
-
-void playerTakeDamage()
-{
-  if (player.invincibilityTimer > 0.0f)
-    return;
-
-  player.health--;
-  player.invincibilityTimer = INVINCIBILITY_DURATION;
-
-  if (player.health <= 0)
-    playerInit();
-}
 
 void playerInit()
 {
@@ -76,13 +48,13 @@ void playerUpdate()
   // coyote //
   ////////////
   if (entityHasFloor(player.rect))
-    player.coyoteCounter = COYOTE_FRAMES;
+    player.coyoteCounter = PLAYER_COYOTE_FRAMES;
   else if (player.coyoteCounter > 0)
     player.coyoteCounter--;
 
   // Jump with coyote time
   if (control.b[1] && player.coyoteCounter > 0)
-    jump();
+    playerJump();
 
   /////////////////////////
   // horizontal movement //
@@ -98,15 +70,15 @@ void playerUpdate()
 
   // If not moving, apply friction
   if (moveDir != 0)
-    player.velX += moveDir * MOVE_SPEED;
+    player.velX += moveDir * PLAYER_MOVE_SPEED;
   else
-    player.velX *= (1.0f - FRICTION);
+    player.velX *= (1.0f - PLAYER_FRICTION);
 
   // Clamp velX
-  if (player.velX > MAX_WALK_SPEED)
-    player.velX = MAX_WALK_SPEED;
-  else if (player.velX < -MAX_WALK_SPEED)
-    player.velX = -MAX_WALK_SPEED;
+  if (player.velX > PLAYER_MAX_WALK_SPEED)
+    player.velX = PLAYER_MAX_WALK_SPEED;
+  else if (player.velX < -PLAYER_MAX_WALK_SPEED)
+    player.velX = -PLAYER_MAX_WALK_SPEED;
 
   // Move horizontally
   player.rect.x += player.velX;
@@ -120,6 +92,8 @@ void playerUpdate()
   if (player.drill)
   {
     if (player.velY && (control.left[0] || control.right[0]))
+      player.drillDir = player.dir;
+    else if (!player.velY)
       player.drillDir = player.dir;
   }
 
@@ -157,13 +131,10 @@ void playerUpdate()
       if (tile != 0 && tile != 4)
       {
         if (player.drillDir == 2)
-        {
-          player.velY = -((player.velY + 0.1f) * 1.14f);
-          player.coyoteCounter = 0;
-        }
+          playerBounce(1.14);
 
         if (player.drillDir == -2)
-          player.velY = JUMP_SPEED;
+          playerBounce(1.18);
 
         terrainDamageAdd(x, y);
 
@@ -190,7 +161,7 @@ void playerDraw()
   // Skip draw when invincible (flash)
   if (player.invincibilityTimer > 0.0f)
   {
-    int flashPhase = (int)(player.invincibilityTimer / FLASH_INTERVAL);
+    int flashPhase = (int)(player.invincibilityTimer / PLAYER_FLASH_INTERVAL);
     if (flashPhase % 2 == 0)
       return;
   }
@@ -210,3 +181,28 @@ void playerDraw()
   if (player.drill)
     DrawRectangleRec(player.drillRect, player.drillUsed ? RED : BLUE);
 }
+
+void playerJump()
+{
+  player.velY = -PLAYER_JUMP_SPEED;
+  player.coyoteCounter = 0;
+}
+
+void playerBounce(float force)
+{
+  player.velY = -((player.velY + 0.1f) * force);
+  player.coyoteCounter = 0;
+}
+
+void playerTakeDamage()
+{
+  if (player.invincibilityTimer > 0.0f)
+    return;
+
+  player.health--;
+  player.invincibilityTimer = PLAYER_INVINCIBILITY_DURATION;
+
+  if (player.health <= 0)
+    playerInit();
+}
+

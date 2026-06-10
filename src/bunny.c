@@ -8,8 +8,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-
-
+int bunniesCount = 0;
 Bunny bunnies[MAX_BUNNIES] = {0};
 
 static bool bunnyCanSeePlayer(const Bunny *b)
@@ -45,42 +44,40 @@ static bool bunnyCanSeePlayer(const Bunny *b)
   return true;
 }
 
-static void bunnySpawn(Bunny *b, int tileX, int tileY)
+static void bunnySpawn(int tileX, int tileY)
 {
-  b->rect   = (Rectangle){tileX * TILE_SIZE + 5.0f, tileY * TILE_SIZE - BUNNY_SIZE_Y, BUNNY_SIZE_X, BUNNY_SIZE_Y};
-  b->velX   = 0.0f;
-  b->velY   = 0.0f;
-  b->dir    = 1;
-  b->jumpCooldown = 0;
-  b->active = true;
-  b->health = 2;
-  b->flashTimer = 0;
-  b->state = BUNNY_IDLE;
-  b->stateTimer = 0;
+  bunnies[bunniesCount++] = (Bunny)
+  {
+    .rect         = (Rectangle){tileX * TILE_SIZE, tileY * TILE_SIZE, BUNNY_SIZE_X, BUNNY_SIZE_Y},
+    .velX         = 0.0f,
+    .velY         = 0.0f,
+    .dir          = 1,
+    .jumpCooldown = 0,
+    .health       = 2,
+    .invincibilityTimer = 0.0f,
+    .state              = BUNNY_IDLE,
+    .stateTimer   = 0
+  };
 }
 
 void bunnyInit()
 {
-  for (int i = 0; i < MAX_BUNNIES; i++)
-    bunnies[i].active = false;
+  bunniesCount = 0;
 
   // Spawn a few bunnies across the wider level
-  bunnySpawn(&bunnies[0], 5, 0);
-  bunnySpawn(&bunnies[1], 14, 0);
-  bunnySpawn(&bunnies[2], 22, 0);
+  bunnySpawn(2, 0);
 }
 
 void bunnyUpdate()
 {
   bool hostile = !isDay();
 
-  for (int i = 0; i < MAX_BUNNIES; i++)
+  for (int i = 0; i < bunniesCount; i++)
   {
     Bunny *b = &bunnies[i];
-    if (!b->active)
-      continue;
 
-    if (b->flashTimer > 0)  b->flashTimer--;
+    if (b->invincibilityTimer > 0.0f)
+      b->invincibilityTimer -= GetFrameTime();
     if (b->jumpCooldown > 0) b->jumpCooldown--;
     if (b->stateTimer > 0)   b->stateTimer--;
 
@@ -201,22 +198,29 @@ void bunnyUpdate()
       }
 
       // Check collision with player
-      if (CheckCollisionRecs(b->rect, player.rect))
+      if ( player.drill && !player.drillUsed && b->invincibilityTimer <= 0.0f && CheckCollisionRecs(b->rect, player.drillRect))
       {
-        if (player.drill && player.velY > 0 && b->flashTimer == 0)
+        b->health--;
+        b->invincibilityTimer = BUNNY_INVINCIBILITY_DURATION;
+
+        if (player.velY >= 0.0f)
+          playerBounce(1.20f);
+
+        player.drillUsed = true;
+        
+        if (b->health <= 0)
         {
-          b->health--;
-          b->flashTimer = 1;
-          player.velY = -(player.velY * 1.25f);
-          player.coyoteCounter = 0;
-          if (b->health <= 0)
-            b->active = false;
-        }
-        else
-        {
-          playerTakeDamage();
+          if (bunniesCount != i+1)
+          {
+            bunnies[i] = bunnies[bunniesCount-1];
+            i--;
+          }
+
+          bunniesCount--;
         }
       }
+      else if (b->invincibilityTimer <= 0.0f && CheckCollisionRecs(b->rect, player.rect))
+        playerTakeDamage();
     }
 
     // Move horizontally
@@ -232,10 +236,15 @@ void bunnyUpdate()
 
 void bunnyDraw()
 {
-  for (int i = 0; i < MAX_BUNNIES; i++)
+  for (int i = 0; i < bunniesCount; i++)
   {
-    if (!bunnies[i].active)
-      continue;
+    // Skip draw when invincible (flash)
+    if (bunnies[i].invincibilityTimer > 0.0f)
+    {
+      int flashPhase = (int)(bunnies[i].invincibilityTimer / BUNNY_FLASH_INTERVAL);
+      if (flashPhase % 2 == 0)
+        continue;
+    }
 
     DrawTexturePro(
       texture,

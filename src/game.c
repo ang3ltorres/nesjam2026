@@ -86,19 +86,10 @@ void draw()
 
   EndMode2D();
 
-  // draw time in hours/minutes (screen-space UI)
-  int hours = ((int)timeCycle.time / 60) % 24;
-  int minutes = (int)timeCycle.time % 60;
-  // DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
-  DrawTextEx(font, TextFormat("%02i:%02i", hours, minutes), (Vector2){0.0f, 0.0f}, 8, 0.0f, RAYWHITE);
-
-  // draw health hearts (screen-space UI)
-  for (int i = 0; i < 5; i++)
-  {
-    int hx = GAME_WIDTH  - 8 - i * 8;
-    int hy = 8;
-    DrawRectangle(hx, hy, 6, 6, (i < player.health) ? RED : DARKGRAY);
-  }
+  ////////
+  // UI //
+  ////////
+  uiDraw();
 
   EndTextureMode();
 
@@ -116,6 +107,22 @@ static const int numOptions = 3;
 
 // Simple state for about screen
 static bool showAbout = false;
+
+void uiDraw()
+{
+
+  // DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
+  DrawTextEx(font, TextFormat("%02i:%02i", timeCycle.hour, timeCycle.minute), (Vector2){0.0f, 0.0f}, 8, 0.0f, RAYWHITE);
+
+  for (int i = 0; i < 5; i++)
+  {
+    int hx = GAME_WIDTH  - 8 - i * 8;
+    int hy = 8;
+    DrawRectangle(hx, hy, 6, 6, (i < player.health) ? RED : DARKGRAY);
+  }
+
+  DrawTextEx(font, TextFormat("Remaining: %02i", bunniesCount), (Vector2){0.0f, 20.0f}, 8, 0.0f, RAYWHITE);
+}
 
 void menuInit(void)
 {

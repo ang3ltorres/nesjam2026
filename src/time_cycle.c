@@ -5,12 +5,14 @@
 
 TimeCycle timeCycle = {
 
-  .time           = 500.0f,
+  .time           = 1100.0f,
   .timeMultiplier = 60.0f * 1,   // 1 hour per second
   .sizeSun        = 12.0f,
   .sizeMoon       = 8.0f,
   .dayStart       = 7,
-  .dayEnd         = 19
+  .dayEnd         = 19,
+  .hour           = 0,
+  .minute         = 0
 };
 
 void timeCycleUpdate()
@@ -20,6 +22,9 @@ void timeCycleUpdate()
     timeCycle.time = 0;
   else
     timeCycle.time += GetFrameTime() * timeCycle.timeMultiplier;
+
+  timeCycle.hour   = ((int)timeCycle.time / 60) % 24;
+  timeCycle.minute = (int)timeCycle.time % 60;
 }
 
 void timeCycleDraw()
