@@ -25,12 +25,7 @@ void timeCycleUpdate()
 void timeCycleDraw()
 {
   // Convert time to degrees
-
-
-  //
-  // degrees = (180.0f / 12.0f) * (timeCycle.time - (7*60)) ;
   float degrees = 180.0f + (timeCycle.time - timeCycle.dayStart * 60.0f) * 0.25f;
-  
   float angle = DEG2RAD * degrees;
 
   if (!isDay())

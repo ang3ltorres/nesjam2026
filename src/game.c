@@ -9,8 +9,9 @@
 
 bool gameScreen = false;
 
-Texture2D texture  = {0};
-Font      font = {0};
+Texture2D texture = {0};
+Font      font    = {0};
+Camera2D  camera  = {0};
 
 void init()
 {
@@ -24,12 +25,19 @@ void init()
 
   renderTexture = LoadRenderTexture(GAME_WIDTH, GAME_HEIGHT);
   texture       = LoadTexture("../res/sprites.png");
-  font      = LoadFontEx("../res/PressStart2P-Regular.ttf", 8, NULL, 0);
+  font          = LoadFontEx("../res/PressStart2P-Regular.ttf", 8, NULL, 0);
 
   terrainInit();
   playerInit();
   bunnyInit();
   menuInit();
+
+  camera = (Camera2D){
+    .target   = { 0.0f, 0.0f },
+    .offset   = { 0.0f, 0.0f },
+    .rotation = 0.0f,
+    .zoom     = 1.0f,
+  };
 
   updateScale();
 }
@@ -49,6 +57,14 @@ void update()
   playerUpdate();
   bunnyUpdate();
 
+  // Camera follows player horizontally, clamped to world bounds
+  float targetCamX = player.rect.x + player.rect.width / 2.0f - GAME_WIDTH / 2.0f;
+  if (targetCamX < 0.0f)
+    targetCamX = 0.0f;
+  if (targetCamX > WORLD_WIDTH - GAME_WIDTH)
+    targetCamX = (float)(WORLD_WIDTH - GAME_WIDTH);
+  camera.target.x = targetCamX;
+
   // Window scale
   if (IsWindowResized())
     updateScale();
@@ -61,16 +77,21 @@ void draw()
   ClearBackground(BLACK);
 
   timeCycleDraw();
+
+  BeginMode2D(camera);
+
   terrainDraw();
   bunnyDraw();
   playerDraw();
 
-  // draw time in hours/minutes
+  EndMode2D();
+
+  // draw time in hours/minutes (screen-space UI)
   int hours = ((int)timeCycle.time / 60) % 24;
   int minutes = (int)timeCycle.time % 60;
   DrawText(TextFormat("Time: %02i:%02i", hours, minutes), 0, 0, 10, RAYWHITE);
 
-  // draw health hearts
+  // draw health hearts (screen-space UI)
   for (int i = 0; i < 5; i++)
   {
     int hx = GAME_WIDTH  - 8 - i * 8;
@@ -83,7 +104,6 @@ void draw()
   BeginDrawing();
 
   ClearBackground(RAYWHITE);
-  // DrawTexture(renderTexture, 0, 0, WHITE);
   DrawTexturePro(renderTexture.texture, (Rectangle){ 0, 0, GAME_WIDTH, -GAME_HEIGHT }, (Rectangle){ 0, 0, GAME_WIDTH * scale, GAME_HEIGHT * scale }, (Vector2){ 0, 0 }, 0, WHITE);
 
   EndDrawing();

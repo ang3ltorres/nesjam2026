@@ -75,10 +75,10 @@ void bunnyInit()
   for (int i = 0; i < MAX_BUNNIES; i++)
     bunnies[i].active = false;
 
-  // Spawn a few bunnies on terrain surface
-  bunnySpawn(&bunnies[0], 4, 0);
-  bunnySpawn(&bunnies[1], 8, 0);
-  bunnySpawn(&bunnies[2], 12, 0);
+  // Spawn a few bunnies across the wider level
+  bunnySpawn(&bunnies[0], 5, 0);
+  bunnySpawn(&bunnies[1], 14, 0);
+  bunnySpawn(&bunnies[2], 22, 0);
 }
 
 void bunnyUpdate()
