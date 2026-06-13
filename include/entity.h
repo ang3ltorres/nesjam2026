@@ -3,7 +3,7 @@
 #include "terrain.h"
 
 #define ENTITY_GRAVITY        0.085f
-#define ENTITY_MAX_FALL_SPEED 4.5f
+#define ENTITY_MAX_FALL_SPEED 5.0f
 
 // Shared physics helpers for player & enemies
 void entityApplyGravity(float *velY);

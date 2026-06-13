@@ -125,12 +125,13 @@ void terrainDraw()
 
       if (t->damage)
       {
+        float rot = (float)(((unsigned)(x * 157 + y * 271) % 4) * 90.0f);
         DrawTexturePro(
           texture,
           (Rectangle){48.0f - ((t->tile - (t->damage - 1)) * 16), 64.0f, TILE_SIZE, TILE_SIZE},
-          (Rectangle){x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE},
-          (Vector2){0.0f, 0.0f},
-          0.0f,
+          (Rectangle){x * TILE_SIZE + 8, y * TILE_SIZE + 8, TILE_SIZE, TILE_SIZE},
+          (Vector2){8.0f, 8.0f},
+          rot,
           WHITE
         );
       }

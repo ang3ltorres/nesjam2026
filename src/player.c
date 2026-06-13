@@ -25,6 +25,7 @@ void playerInit()
     .drillRect          = {0},
     .health             = PLAYER_MAX_HEALTH,
     .invincibilityTimer = 0.0f,
+    .score              = 0
   };
 }
 
@@ -42,7 +43,14 @@ void playerUpdate()
   /////////////
   entityApplyGravity(&player.velY);
   player.rect.y += player.velY;
+
+  // Save fall speed before collision resolution (which zeroes velY on landing)
+  float fallSpeed = player.velY;
   entityResolveVerticalCollision(&player.rect, &player.velY);
+
+  // Fall damage: if we just hit the ground while falling fast enough
+  if (player.velY == 0.0f && fallSpeed >= 5.0f)
+    playerTakeDamage();
 
   ////////////
   // coyote //
@@ -148,7 +156,11 @@ void playerUpdate()
           int idx = y * TERRAIN_TILES_X + x;
           terrain[idx].tile   = 0;
           terrain[idx].damage = 0;
+
+          PlaySound(snd_destroy);
         }
+        else
+          PlaySound(snd_hit);
         
         return;
       }
@@ -178,8 +190,8 @@ void playerDraw()
   );
   
   // Draw drill
-  if (player.drill)
-    DrawRectangleRec(player.drillRect, player.drillUsed ? RED : BLUE);
+  if (player.drill && !player.drillUsed)
+    DrawRectangleRec(player.drillRect, BLUE);
 }
 
 void playerJump()
@@ -192,6 +204,12 @@ void playerBounce(float force)
 {
   player.velY = -((player.velY + 0.1f) * force);
   player.coyoteCounter = 0;
+
+  printf("%f\n", player.velY);
+  if (player.velY < -3.5f)
+    PlaySound(snd_bounce);
+  else
+    PlaySound(snd_hit);
 }
 
 void playerTakeDamage()
@@ -202,6 +220,7 @@ void playerTakeDamage()
   player.health--;
   player.invincibilityTimer = PLAYER_INVINCIBILITY_DURATION;
 
+  // TODO
   if (player.health <= 0)
     playerInit();
 }

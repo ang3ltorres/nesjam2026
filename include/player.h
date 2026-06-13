@@ -2,14 +2,14 @@
 
 #include <raylib.h>
 
-#define PLAYER_JUMP_SPEED           2.0f
-#define PLAYER_MOVE_SPEED           0.1f
-#define PLAYER_FRICTION             0.25f
-#define PLAYER_MAX_WALK_SPEED       1.0f
-#define PLAYER_COYOTE_FRAMES            4
-#define PLAYER_MAX_HEALTH               5
+#define PLAYER_JUMP_SPEED             2.0f
+#define PLAYER_MOVE_SPEED             0.1f
+#define PLAYER_FRICTION               0.25f
+#define PLAYER_MAX_WALK_SPEED         1.0f
+#define PLAYER_COYOTE_FRAMES          4
+#define PLAYER_MAX_HEALTH             5
 #define PLAYER_INVINCIBILITY_DURATION 2.0f
-#define PLAYER_FLASH_INTERVAL        0.1f
+#define PLAYER_FLASH_INTERVAL         0.1f
 
 typedef struct Player
 {
@@ -26,6 +26,9 @@ typedef struct Player
 
   int health;
   float invincibilityTimer;
+
+  unsigned int score;
+  
 } Player;
 
 extern Player player;

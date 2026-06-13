@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <stddef.h>
+#include <stdio.h>
 
 #define TILE_SIZE   16
 #define GAME_WIDTH  256
@@ -18,6 +19,11 @@ extern bool gameScreen;
 extern Texture2D texture;
 extern Font font;
 extern Camera2D camera;
+
+// sounds
+extern Sound snd_bounce;
+extern Sound snd_hit;
+extern Sound snd_destroy;
 
 // game screen
 void init();

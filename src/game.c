@@ -9,9 +9,12 @@
 
 bool gameScreen = false;
 
-Texture2D texture = {0};
-Font      font    = {0};
-Camera2D  camera  = {0};
+Texture2D texture     = {0};
+Font      font        = {0};
+Camera2D  camera      = {0};
+Sound     snd_bounce  = {0};
+Sound     snd_hit     = {0};
+Sound     snd_destroy = {0};
 
 void init()
 {
@@ -23,9 +26,14 @@ void init()
   SetWindowMinSize(GAME_WIDTH, GAME_HEIGHT);
   SetTargetFPS(60);
 
+  InitAudioDevice();
+
   renderTexture = LoadRenderTexture(GAME_WIDTH, GAME_HEIGHT);
   texture       = LoadTexture("assets/sprite.png");
   font          = LoadFontEx("assets/PressStart2P-Regular.ttf", 8, NULL, 0);
+  snd_bounce    = LoadSound("assets/bounce.wav");
+  snd_hit       = LoadSound("assets/hit.wav");
+  snd_destroy   = LoadSound("assets/destroy.wav");
 
   terrainInit();
   playerInit();
@@ -218,6 +226,7 @@ static void drawAboutScreen(void)
     "Program: Angel",
     "Music: Damian",
     "Art: Kike",
+    "sfx: @DagurasuSK"
     "",
     "Nothing is as it seems",
     "Be careful at night",
